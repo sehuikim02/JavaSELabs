@@ -23,9 +23,6 @@ public class FlexibleCompanyDemo {
         Manager mgr3 = (Manager) mgr2;
         System.out.println(mgr3.getDept());
         
-        System.out.println();
-        
-        System.out.println("현재 월급입니다.");
         
         // heterogeneous Collection - employee 타입의 배열의 선언
         // emps 변수는 Employee[] 타입, emps[0]는 Employee 타입
@@ -46,10 +43,13 @@ public class FlexibleCompanyDemo {
         printEmployeeInfo(emps);
     }
 
-	private static void printEmployeeInfo(Employee[] emps) {
+	public static void printEmployeeInfo(Employee[] emps) {
 		for (Employee emp : emps) {
-        	System.out.println(emp.getName() + "의 현재 월급은 " + emp.getSalary() + " 만원 입니다.");
-        	 
+			// emp가 Manager 객체로부터 만들어진  instance인지를 체크하는 연산자
+			if (emp instanceof Manager) {
+				System.out.print("관리자의 부서명 = " + ((Manager)emp).getDept() + " ");
+			}
+        	System.out.println(emp.getName() + "의 현재 월급은 " + emp.getSalary() + " 만원 입니다.");	 
         }
 	}
 }
