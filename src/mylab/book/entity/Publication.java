@@ -1,40 +1,34 @@
 package mylab.book.entity;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+public class Publication {
+    private String title;
+    private String publishDate;
+    private int page;
+    private int price;
 
-public abstract class Publication {
-    protected String title;
-    protected int pages;
-    protected int price;
-    protected LocalDate publishDate;
+    public Publication() {}
 
-    public Publication(String title, int pages, int price, String publishDate) {
+    public Publication(String title, String publishDate, int page, int price) {
         this.title = title;
-        this.pages = pages;
+        this.publishDate = publishDate;
+        this.page = page;
         this.price = price;
-        this.publishDate = LocalDate.parse(publishDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
-    public String getTitle() {
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getPublishDate() { return publishDate; }
+    public void setPublishDate(String publishDate) { this.publishDate = publishDate; }
+
+    public int getPage() { return page; }
+    public void setPage(int page) { this.page = page; }
+
+    public int getPrice() { return price; }
+    public void setPrice(int price) { this.price = price; }
+
+    @Override
+    public String toString() {
         return title;
     }
-
-    public int getPages() {
-        return pages;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public LocalDate getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public abstract String toString();
 }

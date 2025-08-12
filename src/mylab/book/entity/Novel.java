@@ -4,15 +4,15 @@ public class Novel extends Publication {
     private String author;
     private String genre;
 
-    public Novel(String title, String author, String genre, int pages, int price, String publishDate) {
-        super(title, pages, price, publishDate);
+    public Novel(String title, String publishDate, int page, int price, String author, String genre) {
+        super(title, publishDate, page, price);
         this.author = author;
         this.genre = genre;
     }
 
     @Override
     public String toString() {
-        return String.format("%s [소설] 저자:%s, 장르:%s, %d쪽, %,d원, 출판일:%s",
-                title, author, genre, pages, price, publishDate);
+        return getTitle() + " [소설] 저자:" + author + ", 장르:" + genre + ", " +
+               getPage() + "쪽, " + getPrice() + "원, 출판일:" + getPublishDate();
     }
 }

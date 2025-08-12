@@ -1,58 +1,81 @@
 package mylab.book.control;
 
-import java.util.ArrayList;
-import mylab.book.entity.Publication;
+import mylab.book.entity.*;
+import java.util.*;
 
 public class ShoppingCart {
-    private ArrayList<Publication> cart = new ArrayList<>();
+    private List<Publication> items = new ArrayList<>();
 
-    public void addItem(Publication p) {
-        cart.add(p);
-        System.out.printf("%s이(가) 장바구니에 추가되었습니다.%n", p.getTitle());
+    public void addItem(Publication item) {
+        items.add(item);
+        System.out.println(item.getTitle() + "이(가) 장바구니에 추가되었습니다.");
     }
 
-    public void removeItem(String title) {
-        cart.removeIf(p -> {
-            if (p.getTitle().equals(title)) {
-                System.out.printf("%s이(가) 장바구니에서 제거되었습니다.%n", title);
+    public boolean removeItem(String title) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getTitle().equals(title)) {
+                Publication removed = items.remove(i);
+                System.out.println(removed.getTitle() + "이(가) 장바구니에서 제거되었습니다.");
                 return true;
             }
-            return false;
-        });
+        }
+        System.out.println("해당 제목의 출판물을 찾을 수 없습니다.");
+        return false;
     }
 
-    public void showCart() {
+    public void displayCart() {
         System.out.println("====== 장바구니 내용 ======");
         int total = 0;
-        for (int i = 0; i < cart.size(); i++) {
-            Publication p = cart.get(i);
-            System.out.printf("%d. %s - %,d원%n", i + 1, p.getTitle(), p.getPrice());
-            total += p.getPrice();
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println((i+1) + ". " + items.get(i).getTitle() + " - " + String.format("%,d", items.get(i).getPrice()) + "원");
+            total += items.get(i).getPrice();
         }
-        System.out.printf("총 가격: %,d원%n", total);
-        System.out.printf("할인 적용 가격: %,d원%n", (int)(total * 0.85));
+        System.out.println("총 가격: " + String.format("%,d", total) + "원");
+        System.out.println("할인 적용 가격: " + String.format("%,d", calculateDiscountedPrice()) + "원");
     }
 
-    public void showStatistics() {
-        System.out.println("====== 장바구니 통계 ======");
-        int novelCount = 0, magCount = 0, refCount = 0;
-        for (Publication p : cart) {
-            String type = p.getClass().getSimpleName();
-            switch (type) {
-                case "Novel":
-                    novelCount++;
-                    break;
-                case "Magazine":
-                    magCount++;
-                    break;
-                case "ReferenceBook":
-                    refCount++;
-                    break;
+    public int calculateDiscountedPrice() {
+        int total = 0;
+        for (Publication item : items) {
+            if (item instanceof Magazine) {
+                total += item.getPrice() * 0.9;
+            } else if (item instanceof Novel) {
+                total += item.getPrice() * 0.85;
+            } else if (item instanceof ReferenceBook) {
+                total += item.getPrice() * 0.8;
+            } else {
+                total += item.getPrice();
             }
         }
-        System.out.printf("잡지: %d권%n", magCount);
-        System.out.printf("소설: %d권%n", novelCount);
-        System.out.printf("참고서: %d권%n", refCount);
-        System.out.printf("총 출판물: %d권%n", cart.size());
+        return total;
+    }
+
+    public void printStatistics() {
+        int magCount = 0, novelCount = 0, refCount = 0;
+        for (Publication item : items) {
+            if (item instanceof Magazine) magCount++;
+            else if (item instanceof Novel) novelCount++;
+            else if (item instanceof ReferenceBook) refCount++;
+        }
+        System.out.println("====== 장바구니 통계 ======");
+        System.out.println("잡지: " + magCount + "권");
+        System.out.println("소설: " + novelCount + "권");
+        System.out.println("참고서: " + refCount + "권");
+        System.out.println("총 출판물: " + items.size() + "권");
+    }
+
+    public static void main(String[] args) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItem(new Magazine("마이크로소프트", "2007-10-01", 328, 9900, "매월"));
+        cart.addItem(new Magazine("경영과컴퓨터", "2007-10-03", 316, 9000, "매월"));
+        cart.addItem(new Novel("빠삐용", "2007-07-01", 396, 9800, "베르나르베르베르", "현대소설"));
+        cart.addItem(new Novel("남한산성", "2007-04-14", 383, 11000, "김훈", "대하소설"));
+        cart.addItem(new ReferenceBook("실용주의프로그래머", "2007-01-14", 496, 25000, "소프트웨어공학"));
+
+        cart.displayCart();
+        cart.printStatistics();
+
+        cart.removeItem("빠삐용");
+        cart.displayCart();
     }
 }

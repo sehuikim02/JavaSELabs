@@ -1,42 +1,75 @@
 package mylab.book.control;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import mylab.book.entity.Publication;
+import mylab.book.entity.*;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class StatisticsAnalyzer {
-    public void analyze(ArrayList<Publication> books) {
-        System.out.println("===== 출판물 통계 분석 =====");
 
-        // 1. 타입별 평균 가격
+    private String getPublicationType(Publication pub) {
+        if (pub instanceof Novel) return "소설";
+        else if (pub instanceof Magazine) return "잡지";
+        else if (pub instanceof ReferenceBook) return "참고서";
+        return "기타";
+    }
+
+    public Map<String, Double> calculateAveragePriceByType(Publication[] publications) {
+        Map<String, Integer> totalPrice = new HashMap<>();
         Map<String, Integer> count = new HashMap<>();
-        Map<String, Integer> sum = new HashMap<>();
-        for (Publication p : books) {
-            String type = p.getClass().getSimpleName();
+
+        for (Publication pub : publications) {
+            String type = getPublicationType(pub);
+            totalPrice.put(type, totalPrice.getOrDefault(type, 0) + pub.getPrice());
             count.put(type, count.getOrDefault(type, 0) + 1);
-            sum.put(type, sum.getOrDefault(type, 0) + p.getPrice());
         }
+
+        Map<String, Double> avgPrice = new HashMap<>();
+        for (String type : totalPrice.keySet()) {
+            avgPrice.put(type, totalPrice.get(type) / (double) count.get(type));
+        }
+        return avgPrice;
+    }
+
+    public Map<String, Double> calculatePublicationDistribution(Publication[] publications) {
+        Map<String, Integer> count = new HashMap<>();
+        for (Publication pub : publications) {
+            String type = getPublicationType(pub);
+            count.put(type, count.getOrDefault(type, 0) + 1);
+        }
+
+        Map<String, Double> distribution = new HashMap<>();
+        int total = publications.length;
+        for (String type : count.keySet()) {
+            distribution.put(type, (count.get(type) * 100.0) / total);
+        }
+        return distribution;
+    }
+
+    public double calculatePublicationRatioByYear(Publication[] publications, String year) {
+        int count = 0;
+        for (Publication pub : publications) {
+            if (pub.getPublishDate().startsWith(year)) count++;
+        }
+        return (count * 100.0) / publications.length;
+    }
+
+    public void printStatistics(Publication[] publications) {
+        DecimalFormat df = new DecimalFormat("#,###.##");
+
+        System.out.println("===== 출판물 통계 분석 =====");
         System.out.println("1. 타입별 평균 가격:");
-        count.forEach((type, c) -> {
-            System.out.printf("   - %s: %,d원%n",
-                    type.equals("Novel") ? "소설" : type.equals("Magazine") ? "잡지" : "참고서",
-                    sum.get(type) / c);
-        });
+        Map<String, Double> avgPrice = calculateAveragePriceByType(publications);
+        for (String type : avgPrice.keySet()) {
+            System.out.println("   - " + type + ": " + df.format(avgPrice.get(type)) + "원");
+        }
 
-        // 2. 출판물 유형 분포
         System.out.println("\n2. 출판물 유형 분포:");
-        int totalBooks = books.size();
-        count.forEach((type, c) -> {
-            System.out.printf("   - %s: %.2f%%%n",
-                    type.equals("Novel") ? "소설" : type.equals("Magazine") ? "잡지" : "참고서",
-                    (c * 100.0 / totalBooks));
-        });
+        Map<String, Double> dist = calculatePublicationDistribution(publications);
+        for (String type : dist.keySet()) {
+            System.out.println("   - " + type + ": " + df.format(dist.get(type)) + "%");
+        }
 
-        // 3. 2007년에 출판된 비율
         System.out.println("\n3. 2007년에 출판된 출판물 비율: " +
-                String.format("%.2f%%",
-                        books.stream().filter(b -> b.getPublishDate().getYear() == 2007).count()
-                                * 100.0 / totalBooks));
+                           df.format(calculatePublicationRatioByYear(publications, "2007")) + "%");
     }
 }

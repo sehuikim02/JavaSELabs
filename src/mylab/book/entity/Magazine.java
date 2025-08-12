@@ -1,16 +1,16 @@
 package mylab.book.entity;
 
 public class Magazine extends Publication {
-    private String issueFrequency;
+    private String publishPeriod;
 
-    public Magazine(String title, String issueFrequency, int pages, int price, String publishDate) {
-        super(title, pages, price, publishDate);
-        this.issueFrequency = issueFrequency;
+    public Magazine(String title, String publishDate, int page, int price, String publishPeriod) {
+        super(title, publishDate, page, price);
+        this.publishPeriod = publishPeriod;
     }
 
     @Override
     public String toString() {
-        return String.format("%s [잡지] 발행주기:%s, %d쪽, %,d원, 출판일:%s",
-                title, issueFrequency, pages, price, publishDate);
+        return getTitle() + " [잡지] 발행주기:" + publishPeriod + ", " +
+               getPage() + "쪽, " + getPrice() + "원, 출판일:" + getPublishDate();
     }
 }
